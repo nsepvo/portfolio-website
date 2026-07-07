@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "atomic-writes",
+    "kicker": "ON INTEGRITY",
+    "from": "URL SHORTENER",
+    "projectSlug": "url-shortener",
+    "title": "Atomic writes belong in the database, not your code",
+    "teaser": "Two requests, one alias, and the race condition I designed out.",
+    "lead": "When I started the URL shortener, my mental model was simple: Lambda reads an item, checks it, writes it back. Read, decide, write. It works, right up until two requests want the same custom alias at the same moment.",
+    "body": [
+      "Picture both requests reading DynamoDB a millisecond apart. Both reads say 'that alias is free.' Both writes go through. Now one short link points somewhere nobody intended. The check and the write weren't a single action, so the gap between them quietly became a bug.",
+      "DynamoDB's conditional writes close that gap. 'Insert this item only if the short code doesn't already exist' is one indivisible operation. The database decides, atomically, and there's simply no window left to race through.",
+      "The bigger shift was conceptual: the integrity check moved out of my application code and into the layer that can actually guarantee it. I stopped trying to be careful in Lambda and let the database enforce the rule. That reframing has stuck with me on everything I've built since."
+    ],
+    "takeaway": "Put correctness where it can be guaranteed, not where it's merely convenient."
+  },
+  {
+    "slug": "presigned-urls",
+    "kicker": "ON AI",
+    "from": "IMAGE LABEL GENERATOR",
+    "projectSlug": "image-labeler",
+    "title": "Presigned URLs are more powerful than they first appear",
+    "teaser": "Why I stopped sending files through Lambda.",
+    "lead": "My first instinct for image upload was the obvious one: send the file through Lambda to S3. Then I hit the 6MB payload limit and realised Lambda makes a pretty poor file proxy.",
+    "body": [
+      "Presigned URLs flip the whole thing around. Lambda generates a short-lived, permission-scoped URL, and the browser uploads straight to S3. No size ceiling, and Lambda never touches a single byte of the image. It stays focused on logic while storage does storage.",
+      "That unlocked a wider lesson about AWS: the services are built to talk to each other directly. I don't download the image from S3 and re-upload it to Rekognition, I hand Rekognition the bucket and object key and let the two services sort it out internally.",
+      "Less code, fewer moving parts, and a clean mental separation between where data lives and where logic runs. It reframed how I think about wiring services together instead of shuttling data through my own functions."
+    ],
+    "takeaway": "Let services hand each other references, not payloads."
+  },
+  {
+    "slug": "edge-throttling",
+    "kicker": "ON SECURITY",
+    "from": "CONTACT FORM",
+    "projectSlug": "contact-form",
+    "title": "Throttling belongs at the edge, not in application code",
+    "teaser": "Rejecting bad traffic before it ever costs you.",
+    "lead": "It's tempting to handle abuse inside your function, count requests, track IPs, reject the noisy ones. But by the time a request reaches Lambda, you're already paying for it.",
+    "body": [
+      "Putting burst rate limits on API Gateway means floods get rejected before Lambda ever runs. It's cheaper, it's simpler, and the protection lives at the boundary instead of getting tangled into business logic where it doesn't belong.",
+      "This came out of my very first AWS project, a contact form, and it paired naturally with validating input early: reject malformed submissions before they touch SES. Two cheap gates at the edges, and the interior stays clean.",
+      "The side effect nobody mentions is quiet logs. When bad traffic is turned away at the door, your logs stop filling with noise, and quiet logs make the real problems obvious the moment they appear."
+    ],
+    "takeaway": "Reject bad traffic at the boundary; keep your logic, and your logs, clean."
+  },
+  {
+    "slug": "failure-path",
+    "kicker": "ON RELIABILITY",
+    "from": "PRICE TRACKER",
+    "projectSlug": "price-tracker",
+    "title": "A tracker that silently breaks still needs to shout",
+    "teaser": "Designing the failure path on purpose.",
+    "lead": "The price tracker's job is to email me when a price changes. Easy to test the happy path: the price moves, an email arrives. But what happens the day the page layout changes and the price can't be found at all?",
+    "body": [
+      "If I only alert on price changes, a broken scraper looks identical to a stable price, silence. And silence is the most dangerous state a monitor can be in, because it reads as 'everything's fine.'",
+      "So I made failure a first-class event. If the fetch fails or the price can't be parsed, SNS immediately tells me the tracker itself needs attention, and nothing gets written to DynamoDB, there's no valid value to store anyway.",
+      "It taught me to design the failure path as deliberately as the success path. A monitor you can't trust when it's quiet isn't really a monitor; it's just a thing that occasionally sends emails."
+    ],
+    "takeaway": "Design the failure path on purpose, silence should never be mistaken for health."
+  }
+]
