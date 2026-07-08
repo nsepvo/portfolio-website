@@ -102,15 +102,7 @@ a { color: inherit; }
 
 /* ---------- Hero ---------- */
 
-.hero {
-  padding: 110px 72px 130px;
-  display: grid;
-  grid-template-columns: 1.4fr 0.9fr;
-  gap: 64px;
-  align-items: center;
-}
-
-.hero__photo { height: 100%; min-height: 420px; }
+.hero { padding: 110px 72px 130px; }
 
 .kicker {
   font-family: var(--mono);
@@ -143,8 +135,8 @@ a { color: inherit; }
 .reveal {
   opacity: 0;
   transform: translateY(48px);
-  transition: opacity 1s cubic-bezier(0.16, 0.84, 0.44, 1),
-              transform 1s cubic-bezier(0.16, 0.84, 0.44, 1);
+  transition: opacity 0.8s cubic-bezier(0.16, 0.84, 0.44, 1),
+              transform 0.8s cubic-bezier(0.16, 0.84, 0.44, 1);
   will-change: opacity, transform;
 }
 
@@ -171,7 +163,19 @@ a { color: inherit; }
 
 .section__kicker { font-size: 12px; letter-spacing: 0.16em; }
 
-/* Hero photo */
+/* About */
+
+.about .section__kicker { margin-bottom: 44px; }
+
+.about__grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.about__lead { font-size: 24px; line-height: 1.6; margin: 0 0 24px; }
+.about__sub { font-size: 19px; line-height: 1.64; color: var(--muted); margin: 0; }
 
 .photo {
   width: 100%;
@@ -297,26 +301,7 @@ a { color: inherit; }
   padding: 110px 72px;
 }
 
-.contact .section__kicker { color: var(--ink-bg-accent); margin-bottom: 18px; }
-
-.contact__about { margin-bottom: 52px; }
-
-.contact__bio {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 27px;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
-  color: var(--ink-bg-text);
-  max-width: 760px;
-  margin: 0;
-}
-
-.contact__rule {
-  border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  margin: 0 0 52px;
-}
+.contact .section__kicker { color: var(--ink-bg-accent); margin-bottom: 16px; }
 
 .contact h2 {
   font-family: var(--display);
@@ -640,14 +625,13 @@ a { color: inherit; }
 @media (max-width: 900px) {
   .nav { padding: 16px 24px; }
   .nav__links { gap: 18px; }
-  .hero { padding: 72px 24px 84px; grid-template-columns: 1fr; gap: 40px; }
-  .hero__photo { min-height: 320px; }
+  .hero { padding: 72px 24px 84px; }
   .hero h1 { font-size: 68px; }
   .hero__lede { font-size: 24px; }
   .section { padding: 64px 24px; }
   .section h2 { font-size: 40px; }
+  .about__grid { grid-template-columns: 1fr; gap: 36px; }
   .contact { padding: 72px 24px; }
-  .contact__bio { font-size: 22px; }
   .contact h2 { font-size: 48px; }
   .contact__email { font-size: 30px; }
   .doc, .doc-footer__inner { padding-left: 24px; padding-right: 24px; }
